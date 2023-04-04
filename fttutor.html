@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatGPT Tutor</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    #chat-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+    }
+
+    #messages {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
+    #messages div {
+      margin-bottom: 10px;
+    }
+
+    #message-form {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #user-message {
+      flex-grow: 1;
+      padding: 8px;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    #message-form button {
+      background-color: #1e88e5;
+      color: #ffffff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    #message-form button:hover {
+      background-color: #1565c0;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="messages">
+      <!-- Messages will be displayed here -->
+    </div>
+    <form id="message-form">
+      <input type="text" id="user-message" placeholder="Type your message here..." autocomplete="off">
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    const messageForm = document.getElementById("message-form");
+    const userMessage = document.getElementById("user-message");
+    const messages = document.getElementById("messages");
+
+    messageForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Display the user's message
+      const messageText = userMessage.value.trim();
+      displayMessage("User", messageText);
+
+      // Call the ChatGPT API
+      const responseText = await sendChatGPTMessage(messageText);
+
+      // Display the ChatGPT response
+      displayMessage("ChatGPT", responseText);
+
+      // Clear the input field
+      userMessage.value = "";
+    });
+
+    const displayMessage = (sender, text) => {
+      const messageElement = document.createElement("div");
+      messageElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      messages.appendChild(messageElement);
+    };
+
+       const sendChatGPTMessage = async (message) => {
+      // Define the teacher instruction
+      const teacherInstruction = "You are a tutor for primary school students in Turkey. ";
+
+      // Combine the instruction with the user's message
+      const fullPrompt = teacherInstruction + message;
+
+      try {
+        const response = await axios.post('https://api.openai.com/v1/engines/davinci-codex/completions', {
+          prompt: fullPrompt,
+          max_tokens: 50, // Adjust as needed
+          n: 1,
+          stop: null,
+          temperature: 0.8,
+        }, {
+          headers: {
+            'Authorization': `Bearer 'skFd2381Kw0oFDlnJQT2FMT3BlbkFJE2Wyn7TGBd0q6SczIEB1'`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        return response.data.choices[0].text;
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  </script>
+</body>
+</html>
