@@ -102,32 +102,37 @@
       messages.appendChild(messageElement);
     };
 
-       const sendChatGPTMessage = async (message) => {
-      // Define the teacher instruction
-      const teacherInstruction = "You are a tutor for primary school students in Turkey. ";
+      const sendChatGPTMessage = async (message) => {
+  // Define the teacher instruction
+  const teacherInstruction = "You are a tutor for primary school students in Turkey. ";
 
-      // Combine the instruction with the user's message
-      const fullPrompt = teacherInstruction + message;
+  // Combine the instruction with the user's message
+  const fullPrompt = teacherInstruction + message;
 
-      try {
-        const response = await axios.post('https://api.openai.com/v1/engines/davinci-codex/completions', {
-          prompt: fullPrompt,
-          max_tokens: 50, // Adjust as needed
-          n: 1,
-          stop: null,
-          temperature: 0.8,
-        }, {
-          headers: {
-            'Authorization': `Bearer 'skFd2381Kw0oFDlnJQT2FMT3BlbkFJE2Wyn7TGBd0q6SczIEB1'`,
-            'Content-Type': 'application/json',
-          },
-        });
+  try {
+    const response = await axios.post('https://api.openai.com/v1/engines/davinci-codex/completions', {
+      prompt: fullPrompt,
+      max_tokens: 50, // Adjust as needed
+      n: 1,
+      stop: null,
+      temperature: 0.8,
+    }, {
+      headers: {
+        'Authorization': `Bearer 'skFd2381Kw0oFDlnJQT2FMT3BlbkFJE2Wyn7TGBd0q6SczIEB1'`,
+        'Content-Type': 'application/json',
+      },
+    });
 
-        return response.data.choices[0].text;
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    if (response.data.choices && response.data.choices[0] && response.data.choices[0].text) {
+      return response.data.choices[0].text;
+    } else {
+      return "There was an issue with the API response. Please try again later.";
+    }
+  } catch (error) {
+    console.error(error);
+    return "There was an error while sending the message. Please try again later.";
+  }
+};
   </script>
 </body>
 </html>
